@@ -14,7 +14,7 @@ class FlockLoadTestingKit(FastHttpUser):
         response = self.client.post(
             url=f"/inference/{model_tag}", 
             json={"input": USER_PROMPT},
-            headers={"Authorization": "Bearer Eit9lqbVKtSLejQ25UCmg9gOs761aWNs"}
+            headers={"Authorization": f"Bearer {DEEPINFRA_API_KEY}"}
         )
         response_data = json.loads(response.text)
         print(response_data)
