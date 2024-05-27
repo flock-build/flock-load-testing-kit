@@ -1,5 +1,7 @@
+import os
 import subprocess
 import sys
+import urllib.parse
 
 from const.config import CONFIG
 from utils.config_util import save_config
@@ -24,6 +26,11 @@ def run_locust(num_users, runtime, model):
         runtime,
         "--tags",
         model,
+        "--csv",
+        "temp/flk_fly",
+        "--csv-full-history",
+        "--html",
+        "temp/fly_fly.html",
     ]
     subprocess.run(custom_locust_args, cwd=".")
 
@@ -36,7 +43,15 @@ def main():
     if sys.argv[1] == "fly" and sys.argv[2] == "llm":
         config = get_config()
         run_locust(
-            config[CONFIG.NUMBER_OF_USERS.value], config[CONFIG.RUNTIME.value], config[CONFIG.MODEL.value]
+            config[CONFIG.NUMBER_OF_USERS.value],
+            config[CONFIG.RUNTIME.value],
+            config[CONFIG.MODEL.value],
+        )
+        file_path = "temp/flk_fly.html"
+        absolute_path = os.path.abspath(file_path)
+        print(
+            "Link to Results: ",
+            urllib.parse.urljoin("file:", urllib.parse.quote(absolute_path)),
         )
     elif sys.argv[1] == "roost":
         run_locust_ui()

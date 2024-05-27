@@ -1,6 +1,12 @@
+import os
+
+from dotenv import load_dotenv
+
 from const.config import CONFIG
 from const.model_mapping import MODEL_MAPPING
 from utils.config_util import save_config, update_config
+
+load_dotenv()
 
 
 def get_user_input() -> dict:
@@ -46,15 +52,19 @@ def get_user_input() -> dict:
 def __prompt_input():
     print("\n")
     print("🦅 What prompt do you want to run? 🦅")
-    prompt = input("Enter a prompt you want to analyze: ")
-    return prompt
+    val = input("Enter a prompt you want to analyze: ")
+    if not val:
+        val = os.environ.get("prompt")
+    return val
 
 
 def __api_key_input():
     print("\n")
     print("🦅 What is your deepinfra API key? 🦅")
-    prompt = input("Enter API Key: ")
-    return prompt
+    val = input("Enter API Key: ")
+    if not val:
+        val = os.environ.get("api_key")
+    return val
 
 
 def __model_input():
@@ -62,22 +72,27 @@ def __model_input():
     print("🦅 Which model would you like to Flock? 🦅")
     for key, value in MODEL_MAPPING.items():
         print(f"{key}) {value}")
-    model = input(
+    val = input(
         "Enter the number corresponding to the model you want to performance test: "
     )
-
-    return model
+    if not val:
+        val = os.environ.get("model")
+    return val
 
 
 def __num_user_input():
     print("\n")
     print("🦅 How many users do you want to simulate? 🦅")
-    num_users = input("Enter the number of users you want to simulate: ")
-    return num_users
+    val = input("Enter the number of users you want to simulate: ")
+    if not val:
+        val = os.environ.get("num_user")
+    return val
 
 
 def __runtime_input():
     print("\n")
     print("🦅 How long do you want to run your load test? 🦅")
-    runtime = input("Enter how long you want to run your load test (Ex: 1h 30s): ")
-    return runtime
+    val = input("Enter how long you want to run your load test (Ex: 1h 30s): ")
+    if not val:
+        val = os.environ.get("runtime")
+    return val
