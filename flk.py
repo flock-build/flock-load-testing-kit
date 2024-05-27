@@ -38,7 +38,7 @@ def main():
         run_locust(
             config[CONFIG.NUMBER_OF_USERS.value], config[CONFIG.RUNTIME.value], config[CONFIG.MODEL.value]
         )
-    if sys.argv[1] == "roost":
+    elif sys.argv[1] == "roost":
         run_locust_ui()
     else:
         print("Usage: flk [fly (cli)|roost (web)]")
