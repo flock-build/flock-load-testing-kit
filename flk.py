@@ -35,26 +35,30 @@ def run_locust(num_users, runtime, model):
     subprocess.run(custom_locust_args, cwd=".")
 
 
-def run_locust_ui():
+def roost():
     subprocess.run(["locust"], cwd=".")
+
+
+def fly():
+    config = get_config()
+    run_locust(
+        config[CONFIG.NUMBER_OF_USERS.value],
+        config[CONFIG.RUNTIME.value],
+        config[CONFIG.MODEL.value],
+    )
+    file_path = "temp/flk_fly.html"
+    absolute_path = os.path.abspath(file_path)
+    print(
+        "Link to Results: ",
+        urllib.parse.urljoin("file:", urllib.parse.quote(absolute_path)),
+    )
 
 
 def main():
     if sys.argv[1] == "fly" and sys.argv[2] == "llm":
-        config = get_config()
-        run_locust(
-            config[CONFIG.NUMBER_OF_USERS.value],
-            config[CONFIG.RUNTIME.value],
-            config[CONFIG.MODEL.value],
-        )
-        file_path = "temp/flk_fly.html"
-        absolute_path = os.path.abspath(file_path)
-        print(
-            "Link to Results: ",
-            urllib.parse.urljoin("file:", urllib.parse.quote(absolute_path)),
-        )
+        fly()
     elif sys.argv[1] == "roost":
-        run_locust_ui()
+        roost()
     else:
         print("Usage: flk [fly (cli)|roost (web)]")
 
