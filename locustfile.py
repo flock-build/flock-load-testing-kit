@@ -119,6 +119,10 @@ class FlockLoadTestingKit(FastHttpUser):
         print("\n")
         print("Flocking Inference Data...")
 
+        file_path = "temp/inference_data.json"
+        with open(file_path, "w") as json_file:
+            json.dump(inference_data, json_file)
+
         for index, inference_datum in enumerate(inference_data):
             inference_dict = json.loads(inference_datum)
 
