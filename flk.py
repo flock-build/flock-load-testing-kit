@@ -14,7 +14,7 @@ def get_config() -> dict:
     return config
 
 
-def run_locust(num_users, runtime, model):
+def run_locust(num_users, runtime):
     custom_locust_args = [
         "locust",
         "-f",
@@ -27,7 +27,7 @@ def run_locust(num_users, runtime, model):
         "--run-time",
         runtime,
         "--tags",
-        model,
+        "llm",
         "--csv",
         "temp/flk_fly",
         "--csv-full-history",
@@ -44,14 +44,13 @@ def roost():
 def fly():
     # get config
     config = get_config()
-    
+
     # run locust
     run_locust(
         config[CONFIG.NUMBER_OF_USERS.value],
         config[CONFIG.RUNTIME.value],
-        config[CONFIG.MODEL.value],
     )
-    
+
     # link to report
     file_path = "temp/flk_fly.html"
     absolute_path = os.path.abspath(file_path)
