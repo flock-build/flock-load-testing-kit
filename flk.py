@@ -20,8 +20,10 @@ def run_locust(num_users, runtime, model):
         "-f",
         "locustfile.py",
         "--headless",
-        "-u",
+        "--users",
         num_users,
+        "--spawn-rate",
+        "1",
         "--run-time",
         runtime,
         "--tags",
@@ -30,7 +32,7 @@ def run_locust(num_users, runtime, model):
         "temp/flk_fly",
         "--csv-full-history",
         "--html",
-        "temp/fly_fly.html",
+        "temp/flk_fly.html",
     ]
     subprocess.run(custom_locust_args, cwd=".")
 
@@ -40,12 +42,17 @@ def roost():
 
 
 def fly():
+    # get config
     config = get_config()
+    
+    # run locust
     run_locust(
         config[CONFIG.NUMBER_OF_USERS.value],
         config[CONFIG.RUNTIME.value],
         config[CONFIG.MODEL.value],
     )
+    
+    # link to report
     file_path = "temp/flk_fly.html"
     absolute_path = os.path.abspath(file_path)
     print(
