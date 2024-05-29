@@ -1,6 +1,7 @@
 import json
 
 from locust import FastHttpUser, events, tag, task
+from locust.runners import MasterRunner
 
 from const.config import CONFIG
 from utils.config_util import read_config
@@ -35,13 +36,14 @@ class FlockLoadTestingKit(FastHttpUser):
         response_data = json.loads(response.text)
         inference_data.append(json.dumps(response_data["inference_status"]))
 
-    def on_test_stop(environment, **kwargs):
-        write_inference_data(inference_data)
-        print("\nFlocking Inference Data...\n")
-        print_inference_data(inference_data)
-        print("Happy Flocking 🦅\n")
+    @events.test_start.add_listener
+    def on_test_start(environment, **kwargs):
+        print("\n🦅 Flocking in progress...\n")
 
-    events.test_stop.add_listener(on_test_stop)
+    @events.test_stop.add_listener
+    def on_test_stop(environment, **kwargs):
+        print("\n🦅 Flocking complete...\n")
+        print_inference_data(inference_data)
 
 
 def write_inference_data(inference_data):
