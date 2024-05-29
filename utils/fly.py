@@ -10,9 +10,9 @@ from utils.input import get_user_input
 def fly():
     """
     Start FLK Load testing.
-    
+
     Retrieves user input, saves config and runs locust.
-    
+
     Once completes, saves test data into temp directory
     """
 
@@ -28,10 +28,26 @@ def fly():
     print("\n🦅 Flocking complete...\n")
 
     # link to report
+    __generate_locust_report_link()
+
+    # link to inference data
+    __save_inference_data()
+
+
+def __generate_locust_report_link():
     file_path = "temp/flk_fly.html"
     absolute_path = os.path.abspath(file_path)
     print(
-        "Link to Results: ",
+        "Link to Test Report: ",
+        urllib.parse.urljoin("file:", urllib.parse.quote(absolute_path)),
+    )
+
+
+def __save_inference_data():
+    file_path = "temp/flk_fly_inference_data.json"
+    absolute_path = os.path.abspath(file_path)
+    print(
+        "Link to Inference Data: ",
         urllib.parse.urljoin("file:", urllib.parse.quote(absolute_path)),
     )
 
