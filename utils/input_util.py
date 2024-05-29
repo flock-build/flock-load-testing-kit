@@ -42,8 +42,6 @@ def get_user_input() -> dict:
     # save config
     save_config(config)
 
-    print("\nInitiating load test...\n")
-
     return config
 
 

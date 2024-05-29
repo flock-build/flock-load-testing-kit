@@ -46,11 +46,13 @@ def fly():
     config = get_config()
 
     # run locust
+    print("\n🦅 Flocking in progress...\n")
     run_locust(
         config[CONFIG.NUMBER_OF_USERS.value],
         config[CONFIG.RUNTIME.value],
     )
-
+    print("\n🦅 Flocking complete...\n")
+    
     # link to report
     file_path = "temp/flk_fly.html"
     absolute_path = os.path.abspath(file_path)

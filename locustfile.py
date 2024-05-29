@@ -7,7 +7,6 @@ from utils.config_util import read_config
 
 inference_data = []
 
-
 class FlockLoadTestingKit(FastHttpUser):
     host = "https://api.deepinfra.com/v1"
     api_key = ""
@@ -37,24 +36,25 @@ class FlockLoadTestingKit(FastHttpUser):
 
     @events.test_start.add_listener
     def on_test_start(environment, **kwargs):
-        print("\n🦅 Flocking in progress...\n")
+        print("> Test loaded...")
 
     @events.test_stop.add_listener
     def on_test_stop(environment, **kwargs):
-        print("\n🦅 Flocking complete...\n")
+        print("\nInference Data for Prompts:")
         print_inference_data(inference_data)
 
     @events.request.add_listener
     def on_request_complete(name, response_time, **kwargs):
-        print(f"🦅 New request logged | name: {name} | response_time: {response_time}")
+        print(f"> New request logged | name: {name} | response_time: {response_time}")
 
     @events.spawning_complete.add_listener
     def on_spawning_complete(user_count, **kwargs):
-        print(f"\n🦅 All users ({user_count}) spawned...\n")
-        
+        print(f"> All users ({user_count}) spawned...")
+
     @events.cpu_warning.add_listener
     def cpu_warning():
-        print("\n🦅 CPU usage >90%\n")
+        print("> CPU usage >90%")
+
 
 def write_inference_data(inference_data):
     file_path = "temp/inference_data.json"
@@ -75,12 +75,10 @@ def print_inference_data(inference_data):
         tokens_per_sec = (tokens_generated + tokens_input) / runtime_ms
         output_to_input_factor = tokens_generated / tokens_input
 
-        print(f"Inference Data for Prompt #{index + 1}...")
-
+        print(f"Prompt #{index + 1}...")
         print(f"> Runtime (ms): {runtime_ms}")
         print(f"> Cost: {cost} | Cost Per Sec: {cost_per_sec}")
         print(f"> Output Tokens: {tokens_generated} | Input Tokens: {tokens_input}")
         print(f"> Tokens Per Sec: {tokens_per_sec}")
         print(f"> Output to Input Token Ratio: {output_to_input_factor}")
-
         print()
