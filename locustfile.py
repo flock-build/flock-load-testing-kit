@@ -7,6 +7,7 @@ from utils.config_util import read_config
 
 inference_data = []
 
+
 class FlockLoadTestingKit(FastHttpUser):
     host = "https://api.deepinfra.com/v1"
     api_key = ""
@@ -26,13 +27,11 @@ class FlockLoadTestingKit(FastHttpUser):
     @task
     def call_llm(self):
         self.init_config()
-        response = self.client.post(
+        self.client.post(
             url=f"/inference/{self.model}",
             json={"input": self.prompt},
             headers={"Authorization": f"Bearer {self.api_key}"},
         )
-        response_data = json.loads(response.text)
-        inference_data.append(json.dumps(response_data["inference_status"]))
 
     @events.test_start.add_listener
     def on_test_start(environment, **kwargs):
@@ -41,11 +40,48 @@ class FlockLoadTestingKit(FastHttpUser):
     @events.test_stop.add_listener
     def on_test_stop(environment, **kwargs):
         print("\nInference Data for Prompts:")
-        print_inference_data(inference_data)
+        # print_inference_data(inference_data)
+        print("inference_data", inference_data)
+        write_inference_data(inference_data)
 
     @events.request.add_listener
-    def on_request_complete(name, response_time, **kwargs):
-        print(f"> New request logged | name: {name} | response_time: {response_time}")
+    def on_request_complete(
+        request_type,
+        name,
+        response_time,
+        response_length,
+        response,
+        context,
+        exception,
+        start_time,
+        url,
+        **kwargs,
+    ):
+        data = {
+            "url": url,
+            "name": name,
+            "request_type": request_type,
+            "start_time": start_time,
+            "response_time": response_time,
+            "response_length": response_length,
+            "response": response.json(),
+            "context": context,
+        }
+
+        inference_data.append(data)
+        print(
+            f"> New request logged\n"
+            f"  - Request Type   : {request_type}\n"
+            # f"  - Name           : {name}\n"
+            f"  - URL            : {url}\n"
+            f"  - Start Time     : {start_time}\n"
+            f"  - Response Time  : {response_time} ms\n"
+            f"  - Response Length: {response_length} bytes\n"
+            # f"  - Exception      : {exception}\n"
+            # f"  - Context        : {context}\n"
+            # f"  - Additional Info: {kwargs}\n"
+            # f"  - Response       : {response.json()}\n"
+        )
 
     @events.spawning_complete.add_listener
     def on_spawning_complete(user_count, **kwargs):
@@ -57,7 +93,7 @@ class FlockLoadTestingKit(FastHttpUser):
 
 
 def write_inference_data(inference_data):
-    file_path = "temp/inference_data.json"
+    file_path = "temp/flk_fly_inference_data.json"
     with open(file_path, "w") as json_file:
         json.dump(inference_data, json_file)
 
