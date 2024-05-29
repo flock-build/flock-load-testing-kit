@@ -4,8 +4,8 @@ import sys
 import urllib.parse
 
 from const.config import CONFIG
-from utils.config_util import save_config
-from utils.input_util import get_user_input
+from utils.config import save_config
+from utils.input import get_user_input
 
 
 def get_config() -> dict:
