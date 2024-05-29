@@ -1,7 +1,6 @@
 import json
 
 from locust import FastHttpUser, events, tag, task
-from locust.runners import MasterRunner
 
 from const.config import CONFIG
 from utils.config_util import read_config
@@ -45,6 +44,17 @@ class FlockLoadTestingKit(FastHttpUser):
         print("\n🦅 Flocking complete...\n")
         print_inference_data(inference_data)
 
+    @events.request.add_listener
+    def on_request_complete(name, response_time, **kwargs):
+        print(f"🦅 New request logged | name: {name} | response_time: {response_time}")
+
+    @events.spawning_complete.add_listener
+    def on_spawning_complete(user_count, **kwargs):
+        print(f"\n🦅 All users ({user_count}) spawned...\n")
+        
+    @events.cpu_warning.add_listener
+    def cpu_warning():
+        print("\n🦅 CPU usage >90%\n")
 
 def write_inference_data(inference_data):
     file_path = "temp/inference_data.json"
@@ -69,9 +79,8 @@ def print_inference_data(inference_data):
 
         print(f"> Runtime (ms): {runtime_ms}")
         print(f"> Cost: {cost} | Cost Per Sec: {cost_per_sec}")
-        print(
-            f"> Output Tokens: {tokens_generated} | Input Tokens: {tokens_input} | Tokens Per Sec: {tokens_per_sec}"
-        )
+        print(f"> Output Tokens: {tokens_generated} | Input Tokens: {tokens_input}")
+        print(f"> Tokens Per Sec: {tokens_per_sec}")
         print(f"> Output to Input Token Ratio: {output_to_input_factor}")
 
         print()
