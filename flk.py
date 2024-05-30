@@ -1,7 +1,11 @@
 import sys
 
+from dotenv import load_dotenv
+
 from utils.fly import fly
 from utils.roost import roost
+
+load_dotenv()
 
 
 def main():

@@ -1,10 +1,14 @@
+import json
 import os
 import subprocess
 import urllib.parse
+import uuid
 
 from const.config import CONFIG
 from utils.config import save_config
+from utils.data_processing import clean_up_locust_data
 from utils.input import get_user_input
+from utils.mongo import save_to_mongo
 
 
 def fly():
@@ -27,11 +31,13 @@ def fly():
     )
     print("\n🦅 Flocking complete...\n")
 
+    # link to inference data
+    __save_inference_data(config[CONFIG.SESSION_ID.value])
+
     # link to report
     __generate_locust_report_link()
 
-    # link to inference data
-    __save_inference_data()
+    print(f"Session ID: {config[CONFIG.SESSION_ID.value]}")
 
 
 def __generate_locust_report_link():
@@ -43,8 +49,18 @@ def __generate_locust_report_link():
     )
 
 
-def __save_inference_data():
+def __save_inference_data(guid: str):
     file_path = "temp/flk_fly_inference_data.json"
+
+    # save inference data to mongo
+    with open(file_path, "r") as file:
+        data = json.load(file)
+
+    processed_data = clean_up_locust_data(data, guid)
+
+    save_to_mongo(processed_data)
+
+    # save inference data to temp directory
     absolute_path = os.path.abspath(file_path)
     print(
         "Link to Inference Data: ",
@@ -54,6 +70,7 @@ def __save_inference_data():
 
 def __get_config() -> dict:
     config = get_user_input()
+    config[CONFIG.SESSION_ID.value] = str(uuid.uuid4())
     save_config(config)
     return config
 

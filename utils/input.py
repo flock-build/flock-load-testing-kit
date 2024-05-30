@@ -1,12 +1,8 @@
 import os
 
-from dotenv import load_dotenv
-
 from const.config import CONFIG
 from const.model_mapping import MODEL_MAPPING
 from utils.config import save_config, update_config
-
-load_dotenv()
 
 
 def get_user_input() -> dict:

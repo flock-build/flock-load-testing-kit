@@ -10,27 +10,22 @@ inference_data = []
 
 class FlockLoadTestingKit(FastHttpUser):
     host = "https://api.deepinfra.com/v1"
-    api_key = ""
-    prompt = ""
-    model = ""
+    config = {}
 
     def init_config(self):
-        if self.api_key or self.prompt or self.model:
+        if self.config:
             return
 
-        config = read_config()
-        self.api_key = config[CONFIG.API_KEY.value]
-        self.prompt = config[CONFIG.PROMPT.value]
-        self.model = config[CONFIG.MODEL.value]
+        self.config = read_config()
 
     @tag("llm")
     @task
     def call_llm(self):
         self.init_config()
         self.client.post(
-            url=f"/inference/{self.model}",
-            json={"input": self.prompt},
-            headers={"Authorization": f"Bearer {self.api_key}"},
+            url=f"/inference/{self.config[CONFIG.MODEL.value]}",
+            json={"input": self.config[CONFIG.PROMPT.value]},
+            headers={"Authorization": f"Bearer {self.config[CONFIG.API_KEY.value]}"},
         )
 
     @events.test_start.add_listener
